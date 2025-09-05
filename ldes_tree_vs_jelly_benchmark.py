@@ -108,12 +108,14 @@ def term_to_nq(t) -> str:
 
 def serialize_to_jelly(quads_by_member, path_jelly: str) -> None:
     os.makedirs(os.path.dirname(path_jelly), exist_ok=True)
-    ds = Dataset()  # ← was ConjunctiveGraph()
+    ds = Dataset()
     for member, quads in quads_by_member.items():
-        g = ds.graph(member)  # convenient way to get/create the named graph
+        g = ds.graph(member)
         for (s, p, o, _g) in quads:
             g.add((s, p, o))
-    ds.serialize(destination=path_jelly, format="jelly")
+    # Write gzipped Jelly (open in binary mode)
+    with gzip.open(path_jelly, "wb") as f:
+        ds.serialize(destination=f, format="jelly")
 
 # ----------------------------
 # Benchmarking
@@ -188,11 +190,11 @@ def parse_tree_profile_batches(path_gz: str, batch_size: int) -> List[BatchStat]
     return batch_stats
 
 def parse_jelly_batches(path_jelly: str, batch_size: int):
-    ds = Dataset()  # ← was ConjunctiveGraph()
-
-    # Load Jelly (keep this time separate so you can report it)
+    ds = Dataset()
+    # Load gzipped Jelly
     t0_load = time.perf_counter()
-    ds.parse(path_jelly, format="jelly")
+    with gzip.open(path_jelly, "rt", encoding="utf-8") as f:
+        ds.parse(f, format="jelly")
     load_time = time.perf_counter() - t0_load
 
     batch_stats = []
@@ -251,7 +253,7 @@ def main():
     write_tree_profile_page_gz(quads_by_member, tree_path)
 
     # 3) Convert same dataset to Jelly
-    jelly_path = os.path.join(OUT_DIR, "dataset.jelly")
+    jelly_path = os.path.join(OUT_DIR, "dataset.jelly.gz")
     serialize_to_jelly(quads_by_member, jelly_path)
 
     # 4) Benchmark: TREE profile parsing (streaming, batches of 100)

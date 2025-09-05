@@ -4,7 +4,7 @@ When fetching data over the web, we can either use the standard RDF serializatio
 
 If the client wants to process groups of triples together, standard RDF serializations have a lot of overhead, as first you need to parse the entire page before being able to use the first group. Therefore we introduced the [TREE profile](https://treecg.github.io/specification/profile) that promises to the client that certain quads will be grouped so they can be processed earlier. In combination with gzip, we thought that would be a good trade-off in performance and bandwidth consumption.
 
-[Jelly RDF](https://jelly-rdf.github.io/) is gaining traction. It is a binary format for storing RDF quads that has native support for grouping quads into “frames”. Parser are written in lower-level languages and provide bindings to higher level languages. On their own webpage they produce impressive charts on performance to serialize and parse.
+[Jelly RDF](https://jelly-rdf.github.io/) is gaining traction. It is a binary format for storing RDF quads that has native support for grouping quads into “frames”. On their own webpage they produce impressive charts on performance to serialize and parse.
 
 I wonder if when we apply it in an LDES setting, what the speed up would be: would it indeed be a huge as promised on their website, or would the benefit be negligible? I was skeptical and wanted to feel the difference.
 
@@ -37,32 +37,37 @@ We’ve already included the data as well in this repository, but when running t
 
 ## Results
 
-
-### TREE profile parsing
-```
+### Throughput test
+```bash
 === TREE profile (.tree.nq.gz) parsing ===
 Total members processed in batches: 10000
 Total quads processed in batches:   179089
-Sum of batch times:                 0.4264s
-Throughput (members/s):            23453.33
-Throughput (quads/s):              420023.36
-Batch 0: members=100, quads=1832, time=0.0071s
-Batch 1: members=100, quads=1768, time=0.0055s
-Batch 2: members=100, quads=1820, time=0.0052s
-```
+Sum of batch times:                 0.4375s
+Throughput (members/s):            22855.30
+Throughput (quads/s):              409313.27
+Batch 0: members=100, quads=1832, time=0.0063s
+Batch 1: members=100, quads=1768, time=0.0045s
+Batch 2: members=100, quads=1820, time=0.0043s
 
-### Jelly parsing
-```
 === Jelly parsing ===
-Initial load time (not batched): 7.6573s
+Initial load time (not batched): 7.6948s
 Total members processed in batches: 10001
 Total quads processed in batches:   179102
 Sum of batch times:                 0.0243s
-Throughput (members/s):            411622.98
-Throughput (quads/s):              7371512.78
-Batch 0: members=100, quads=1818, time=0.0003s
-Batch 1: members=100, quads=1843, time=0.0003s
-Batch 2: members=100, quads=1858, time=0.0003s
+Throughput (members/s):            411473.32
+Throughput (quads/s):              7368832.60
+Batch 0: members=100, quads=1808, time=0.0003s
+Batch 1: members=100, quads=1909, time=0.0003s
+Batch 2: members=100, quads=1892, time=0.0003s
+```
+
+### Disk space
+
+```bash
+3,9M    out/dataset.jelly.gz
+8,1M    out/dataset.jelly
+1,8M    out/tree-page.tree.nq.gz
+26M     out/tree-page.tree.nq
 ```
 
 ## Conclusion
