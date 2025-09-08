@@ -9,19 +9,20 @@ If the client wants to process groups of triples together, standard RDF serializ
 I wonder if when we apply it in an LDES setting, what the speed up would be: would it indeed be a huge as promised on their website, or would the benefit be negligible? I was skeptical and wanted to feel the difference.
 
 
-## Coding up a benchmark in Python
+## Coding up an experiment in Python
 
+As I’m not a python dev and there’s currently no support for Jelly in Javascript,
 I used this prompt:
 
 ```
-I want to create a benchmark in which I test the difference in performance between parsing the Jelly RDF serialization for 10000 LDES members in one page, and compare it with a gzipped TREE profile algorithm approach containing the same amount of members. Can you provide
+I want to create an experiment in which I test the difference in performance between parsing the Jelly RDF serialization for 10000 LDES members in one page, and compare it with a gzipped TREE profile algorithm approach containing the same amount of members. Can you provide
 
 the code to create 10000 LDES members with varying triple counts in the TREE profile algorithm (https://raw.githubusercontent.com/TREEcg/specification/refs/heads/master/05-profile-specification.bs)
 write the code to convert the data into Jelly RDF
 write the code that measures the time in which each time 100 members are parsed from the page into a set of quads
 ```
 
-## Running the benchmark
+## Running the experiment
 
 Installing dependencies
 
